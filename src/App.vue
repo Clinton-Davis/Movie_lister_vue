@@ -10,6 +10,10 @@
         :vote_average="movie.vote_average"
         :release_date="movie.release_date"
         :overview="movie.overview"
+        :genres="movie.genres"
+        :runtime="movie.runtime"
+        :movie_id="movie.movie_id"
+        @get-movie-id="getMovieDetails"
       ></movie-card>
     </main>
     <div class="page">
@@ -31,11 +35,13 @@ export default {
     return {
       results: [],
       page: 1,
+      Id: this.movie_id,
+      ApiKey: process.env.VUE_APP_API_KEY,
     };
   },
   methods: {
     async getMovies() {
-      const API_KEY = process.env.VUE_APP_API_KEY;
+      const API_KEY = this.ApiKey;
       const page = this.page;
       const Popularity_API_URL = `https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&page=${page}&api_key=${API_KEY}`;
       const response = await fetch(Popularity_API_URL);
@@ -44,14 +50,35 @@ export default {
       const results = [];
       for (const id in movies) {
         results.push({
+          movie_id: movies[id].id,
           title: movies[id].title,
           vote_average: movies[id].vote_average,
           release_date: movies[id].release_date,
           overview: movies[id].overview,
           poster_img: movies[id].poster_path,
         });
+        // console.log(results);
         this.results = results;
       }
+    },
+    async getMovieDetails(ID) {
+      const API_KEY = this.ApiKey;
+      const id = ID;
+      const movieDetail_API_URL = `https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}`;
+      const response = await fetch(movieDetail_API_URL);
+      const data = await response.json();
+      console.log(data);
+      const results = [];
+      results.push({
+        title: data.title,
+        vote_average: data.vote_average,
+        release_date: data.release_date,
+        overview: data.overview,
+        poster_img: data.poster_path,
+        runtime: data.runtime,
+        genres: data.genres.name,
+      });
+      this.results = results;
     },
     addPage() {
       let newPage = this.page;

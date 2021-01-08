@@ -1,5 +1,5 @@
 <template>
-  <div class="movie">
+  <div @click="getMovieId" class="movie">
     <img :src="fullimagePath" alt="image" />
     <div class="movie-info">
       <h3>{{ title }}</h3>
@@ -17,7 +17,28 @@
 
 <script>
 export default {
-  props: ["title", "vote_average", "release_date", "overview", "poster_img"],
+  props: [
+    "title",
+    "vote_average",
+    "release_date",
+    "overview",
+    "poster_img",
+    "movie_id",
+    "genres",
+    "runtime",
+  ],
+  data() {
+    return {
+      Id: this.movie_id,
+    };
+  },
+  methods: {
+    getMovieId() {
+      const ID = this.Id;
+      console.log(this.Id);
+      this.$emit("get-movie-id", ID);
+    },
+  },
   computed: {
     fullimagePath() {
       const IMG_PATH = "https://image.tmdb.org/t/p/w1280";
@@ -49,6 +70,7 @@ export default {
   overflow: hidden;
   border-radius: 3px;
   min-height: 300px;
+  cursor: pointer;
 }
 .movie img {
   width: 100%;

@@ -1,13 +1,13 @@
 <template>
   <header>
     <form @submit.prevent="searchMovie">
-      <label for="genra">Genra</label>
+      <!-- <label for="genra">Genra</label>
       <select name="genra" id="genra" v-model="genra">
         <option value="action">Action</option>
         <option value="drama">Drama</option>
         <option value="horror">Horror</option>
         <option value="romance">Romance</option>
-      </select>
+      </select> -->
       <label for="sort">Sort by..</label>
       <select name="sort" id="sort" v-model="sortBy">
         <option value="new">New</option>
