@@ -1,6 +1,11 @@
 <template>
   <div id="app">
-    <search-form></search-form>
+    <search-form
+      @home-page="getMovies"
+      @movie-genra="getGenra"
+      @movie-date="getDate"
+      @movie-search="movieSearch"
+    ></search-form>
     <main>
       <movie-card
         v-for="movie in results"
@@ -79,6 +84,71 @@ export default {
         genres: data.genres.name,
       });
       this.results = results;
+    },
+    async getGenra(genra) {
+      console.log(genra);
+      const API_KEY = this.ApiKey;
+      const page = 2;
+      // const page = this.page;
+      const bestDrama = `https://api.themoviedb.org/3/discover/movie?with_genres=${genra}&sort_by=vote_average.desc&vote_count.gte=10&page=${page}&api_key=${API_KEY}`;
+      const response = await fetch(bestDrama);
+      const data = await response.json();
+      const movies = data.results;
+      const results = [];
+      for (const id in movies) {
+        results.push({
+          movie_id: movies[id].id,
+          title: movies[id].title,
+          vote_average: movies[id].vote_average,
+          release_date: movies[id].release_date,
+          overview: movies[id].overview,
+          poster_img: movies[id].poster_path,
+        });
+        // console.log(results);
+        this.results = results;
+      }
+    },
+    async getDate(date) {
+      const API_KEY = this.ApiKey;
+      const page = this.page;
+      const year = `https://api.themoviedb.org/3/discover/movie?primary_release_year=${date}&sort_by=vote_average.desc&page=${page}&api_key=${API_KEY}`;
+      const response = await fetch(year);
+      const data = await response.json();
+      const movies = data.results;
+      const results = [];
+      for (const id in movies) {
+        results.push({
+          movie_id: movies[id].id,
+          title: movies[id].title,
+          vote_average: movies[id].vote_average,
+          release_date: movies[id].release_date,
+          overview: movies[id].overview,
+          poster_img: movies[id].poster_path,
+        });
+        // console.log(results);
+        this.results = results;
+      }
+    },
+    async movieSearch(searched) {
+      const API_KEY = this.ApiKey;
+      // const page = this.page;
+      const movieSearch = `https://api.themoviedb.org/3/search/movie?&api_key=${API_KEY}&query=${searched}`;
+      const response = await fetch(movieSearch);
+      const data = await response.json();
+      const movies = data.results;
+      const results = [];
+      for (const id in movies) {
+        results.push({
+          movie_id: movies[id].id,
+          title: movies[id].title,
+          vote_average: movies[id].vote_average,
+          release_date: movies[id].release_date,
+          overview: movies[id].overview,
+          poster_img: movies[id].poster_path,
+        });
+        // console.log(results);
+        this.results = results;
+      }
     },
     addPage() {
       let newPage = this.page;

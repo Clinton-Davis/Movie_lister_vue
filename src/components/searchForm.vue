@@ -1,21 +1,32 @@
 <template>
   <header>
-    <form @submit.prevent="searchMovie">
-      <!-- <label for="genra">Genra</label>
-      <select name="genra" id="genra" v-model="genra">
-        <option value="action">Action</option>
-        <option value="drama">Drama</option>
-        <option value="horror">Horror</option>
-        <option value="romance">Romance</option>
-      </select> -->
-      <label for="sort">Sort by..</label>
-      <select name="sort" id="sort" v-model="sortBy">
-        <option value="new">New</option>
-        <option value="old">Old</option>
-        <option value="high_rating">Rating - (High to low)</option>
-        <option value="low_rating">Rating - (low to High)</option>
-      </select>
+    <div @click="popularity" class="logo">
+      Movie List
+    </div>
+    <select @click="searchGenra" name="genra" id="genra" v-model="genra">
+      <option disabled value="genra">Genra</option>
+      <option value="28">Action</option>
+      <option value="12">Adventure</option>
+      <option value="16">Animation</option>
+      <option value="35">Comedy</option>
+      <option value="18">Drama</option>
+      <option value="10751">Family</option>
+      <option value="14">Fantasy</option>
+      <option value="10749">Romance</option>
+    </select>
 
+    <form @submit.prevent="inputDate">
+      <input
+        type="text"
+        id="date"
+        min="1940"
+        max="2021"
+        class="search"
+        placeholder=" Pick a Year"
+        v-model="date"
+      />
+    </form>
+    <form @submit.prevent="searchMovie">
       <input
         type="text"
         id="search"
@@ -29,19 +40,38 @@
 
 <script>
 export default {
+  emits: ["home-page", "movie-genra", "movie-date", "movie-search"],
   data() {
     return {
       searched: "",
-      genra: "action",
-      sortBy: "new",
+      date: "",
+      genra: "genra",
+      sortBy: "date",
     };
   },
   methods: {
     searchMovie() {
-      console.log("searched Movies - " + this.searched);
-      console.log("Sorted by - " + this.genra);
-      console.log("sorted by - " + this.sortBy);
+      console.log(this.searched);
+      this.$emit("movie-search", this.searched);
       this.searched = "";
+    },
+    popularity() {
+      this.$emit("home-page");
+    },
+    searchGenra() {
+      if (this.genra === "genra") {
+        console.log("Did not send anything");
+        return;
+      } else {
+        this.$emit("movie-genra", this.genra);
+      }
+    },
+    inputDate() {
+      console.log(this.date);
+      this.$emit("movie-date", this.date);
+      setTimeout(() => {
+        this.date = "";
+      }, 3000);
     },
   },
 };
@@ -51,7 +81,7 @@ export default {
 header {
   padding: 1rem;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-around;
 }
 select {
   margin: 0 1rem;
@@ -73,5 +103,19 @@ select {
 .search:focus {
   outline: none;
   background-color: var(--primary-color);
+}
+/* form {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+} */
+.logo {
+  color: var(--off-white);
+  width: 20%;
+  display: flex;
+  align-items: center;
+  font-size: 2rem;
+  cursor: pointer;
 }
 </style>

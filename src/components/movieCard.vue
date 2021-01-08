@@ -17,6 +17,7 @@
 
 <script>
 export default {
+  emits: ["get-movie-id"],
   props: [
     "title",
     "vote_average",
