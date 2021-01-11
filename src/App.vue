@@ -6,6 +6,7 @@
       @movie-date="getDate"
       @movie-search="movieSearch"
     ></search-form>
+    <div class="search-prams">Page: {{ page }} | Genra: {{ genraName }}</div>
     <main>
       <movie-card
         v-for="movie in results"
@@ -30,21 +31,21 @@
 </template>
 
 <script>
-import movieCard from "./components/movieCard.vue";
-import searchForm from "./components/searchForm.vue";
+import MovieCard from "./components/MovieCard.vue";
+import SearchForm from "./components/SearchForm.vue";
 
 export default {
   name: "App",
-  components: {
-    "movie-card": movieCard,
-    "search-form": searchForm,
-  },
+  components: { MovieCard, SearchForm },
   data() {
     return {
       results: [],
       page: 1,
       Id: this.movie_id,
       ApiKey: process.env.VUE_APP_API_KEY,
+      has_genra: false,
+      movie_genra: 0,
+      genraName: "",
     };
   },
   methods: {
@@ -67,6 +68,7 @@ export default {
         });
         // console.log(results);
         this.results = results;
+        this.genraName = "All";
       }
     },
     async getMovieDetails(ID) {
@@ -89,14 +91,15 @@ export default {
       this.results = results;
     },
     async getGenra(genra) {
-      console.log(genra);
+      this.movie_genra = genra;
       const API_KEY = this.ApiKey;
-      const page = 2;
+      const page = this.page;
       // const page = this.page;
       const bestDrama = `https://api.themoviedb.org/3/discover/movie?with_genres=${genra}&sort_by=vote_average.desc&vote_count.gte=10&page=${page}&api_key=${API_KEY}`;
       const response = await fetch(bestDrama);
       const data = await response.json();
       const movies = data.results;
+      this.has_genra = true;
       const results = [];
       for (const id in movies) {
         results.push({
@@ -110,6 +113,7 @@ export default {
         // console.log(results);
         this.results = results;
       }
+      this.getGernaName();
     },
     async getDate(date) {
       const API_KEY = this.ApiKey;
@@ -156,19 +160,25 @@ export default {
     addPage() {
       let newPage = this.page;
       newPage++;
-      console.log(newPage);
+      let genra = this.movie_genra;
       this.page = newPage;
-      this.getMovies();
-      this.scrollToTop();
+      if (this.has_genra === true) {
+        this.getGenra(genra);
+        this.scrollToTop();
+      } else {
+        this.getMovies();
+        this.scrollToTop();
+      }
     },
     backPage() {
       let newPage = this.page;
-      if (newPage === 1) {
-        this.getMovies();
+      newPage--;
+      let genra = this.movie_genra;
+      this.page = newPage;
+      if (this.has_genra === true) {
+        this.getGenra(genra);
         this.scrollToTop();
       } else {
-        newPage--;
-        this.page = newPage;
         this.getMovies();
         this.scrollToTop();
       }
@@ -180,7 +190,37 @@ export default {
         behavior: "smooth",
       });
     },
+    getGernaName() {
+      switch (this.movie_genra) {
+        case "18":
+          this.genraName = "Drama";
+          break;
+        case "12":
+          this.genraName = "Adventure";
+          break;
+        case "35":
+          this.genraName = "Comedy";
+          break;
+        case "28":
+          this.genraName = "Action";
+          break;
+        case "16":
+          this.genraName = "Animation";
+          break;
+        case "10751":
+          this.genraName = "Family";
+          break;
+        case "10749":
+          this.genraName = "Romance";
+          break;
+
+        default:
+          this.genraName = "All";
+          break;
+      }
+    },
   },
+
   mounted() {
     this.getMovies();
   },
@@ -244,5 +284,13 @@ main {
   font-size: 1.5rem;
   color: var(--off-white);
   border: 1px var(--off-white) solid;
+}
+.search-prams {
+  font-size: 1.3rem;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--off-white);
 }
 </style>
