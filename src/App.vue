@@ -30,12 +30,15 @@
 </template>
 
 <script>
-import MovieCard from "./components/movieCard.vue";
+import movieCard from "./components/movieCard.vue";
 import searchForm from "./components/searchForm.vue";
 
 export default {
   name: "App",
-  components: { MovieCard, searchForm },
+  components: {
+    "movie-card": movieCard,
+    "search-form": searchForm,
+  },
   data() {
     return {
       results: [],
