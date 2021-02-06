@@ -8,6 +8,9 @@
     ></search-form>
     <div class="search-prams">Page: {{ page }} | Genra: {{ genraName }}</div>
     <main>
+      <div v-if="isLoading">
+        <base-spinner></base-spinner>
+      </div>
       <movie-card
         v-for="movie in results"
         v-bind:key="movie"
@@ -46,10 +49,12 @@ export default {
       has_genra: false,
       movie_genra: 0,
       genraName: "",
+      isLoading: false,
     };
   },
   methods: {
     async getMovies() {
+      this.isLoading = true;
       const API_KEY = this.ApiKey;
       const page = this.page;
       const Popularity_API_URL = `https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&page=${page}&api_key=${API_KEY}`;
@@ -69,6 +74,7 @@ export default {
         // console.log(results);
         this.results = results;
         this.genraName = "All";
+        this.isLoading = false;
       }
     },
     async getMovieDetails(ID) {
